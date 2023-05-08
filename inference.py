@@ -12,6 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import random
 import nltk
+nltk.download('punkt')
 
 from torch.utils.data import DataLoader, Dataset
 from data import get_dataset_class
@@ -89,12 +90,13 @@ class OrdInferenceModule(D2TInferenceModule):
             return_tensors="pt",
         )
 
-        # if hasattr(self.args, "gpus") and self.args.gpus > 0:
-        #     self.model.cuda()
-        #     for key in inputs.keys():
-        #         inputs[key] = inputs[key].cuda()
-        # else:
-        #     logger.warning("Not using GPU")
+        if hasattr(self.args, "gpus") and self.args.gpus > 0:
+            self.model.cuda()
+            for key in inputs.keys():
+                inputs[key] = inputs[key].cuda()
+                logger.info("USING GPU NOW")
+        else:
+            logger.warning("Not using GPU")
 
         output = self.model.order(
             input_ids=inputs["input_ids"],

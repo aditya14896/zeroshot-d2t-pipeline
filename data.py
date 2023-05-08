@@ -225,6 +225,7 @@ class E2E(D2TDataset):
         vals = []
 
         for item in items:
+            # print(item)
             key, val = item.split("[")
             val = val[:-1]
 
@@ -270,9 +271,14 @@ class E2E(D2TDataset):
         if triple.pred in self.templates:
             templates = self.templates[triple.pred]
             # special templates for familyFriendly yes / no
+            print(triple.pred)
+            print(triple.obj)
+            print(templates)
             if type(templates) is dict and triple.obj in templates:
                 template = templates[triple.obj][0]
             else:
+                print(templates)
+                print(type(templates))
                 template = templates[0]
         else:
             template = self.fallback_template

@@ -1,0 +1,28 @@
+{
+    "area": [
+        "<subject> <object> में है।"
+    ],
+    "customer rating": [
+        "<subject> में <object> ग्राहक रेटिंग है।"
+    ],
+    "eatType": [
+        "<subject> एक <object> है।"
+    ],
+    "familyFriendly": {
+        "हाँ" : [
+            "<subject> परिवार के अनुकूल है।"
+        ],
+        "नहीं" : [
+            "<subject> परिवार के अनुकूल नहीं है।"
+        ]
+        },
+    "food": [
+        "<subject> <object> भोजन परोसता है।"
+    ],
+    "near": [
+        "<subject> <object> के पास है।"
+    ],
+    "priceRange": [
+        "<subject> में <object> मूल्य सीमा होती है।"
+    ]
+}
