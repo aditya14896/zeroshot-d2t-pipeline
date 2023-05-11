@@ -111,9 +111,11 @@ class D2TTrainingModule(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = AdamW(
             self.model.parameters(),
-            lr=self.args.learning_rate,
+            lr=1e-5,
             eps=self.args.adam_epsilon,
-            betas=(self.args.adam_beta1, self.args.adam_beta2)
+            betas=(self.args.adam_beta1, self.args.adam_beta2),
+            weight_decay=0.01,
+            correct_bias= True
         )
 
         total_steps = self.args.max_steps if (self.args.max_steps is not None and self.args.max_steps != -1) else len(

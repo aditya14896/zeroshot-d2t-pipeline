@@ -134,6 +134,7 @@ class Preprocessor:
 
     def extract_order(self, split, extract_copy_baseline):
         with open(os.path.join(self.out_dirname, f"{split}.order.out"), "w") as f:
+            data = self.dataset.data[split]
             for i, entry in enumerate(data):
                 if len(entry.triples) == 1:
                     # skip trivial examples
@@ -171,7 +172,7 @@ class Preprocessor:
         data = self.dataset.data[split]
 
         if extract_order:
-            self.extract_order(self, split, extract_copy_baseline)
+            self.extract_order(split, extract_copy_baseline)
             return
         
         for i, entry in enumerate(data):

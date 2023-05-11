@@ -20,7 +20,7 @@ def evaluate_e2e_metrics(args):
         data_ref = [[sent.lower() for sent in sent_list] for sent_list in data_ref]
         data_sys = [sent.lower() for sent in data_sys]
 
-    measure_scores.evaluate(data_src, data_ref, data_sys, print_as_table=True, print_table_header=True)
+    measure_scores.evaluate(data_src, data_ref, data_sys, print_as_table=True, print_table_header=True, python=True)
 
 
 def evaluate_sacrebleu(args):
