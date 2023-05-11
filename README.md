@@ -1,4 +1,4 @@
-# Neural Pipeline for Zero-Shot Data-to-Text Generation
+# Investigation on Neural Pipeline for Zero-Shot Data-to-Text Generation - Enabled Multilinguality
 
 Zero-shot data-to-text generation from RDF triples using a pipeline of pretrained language models (BART, RoBERTa). 
 
@@ -6,6 +6,7 @@ This repository contains code, data, and system outputs for the paper published 
 > Zdeněk Kasner & Ondřej Dušek: Neural Pipeline for Zero-Shot Data-to-Text Generation. In: Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (ACL 2022).
 
 Link for the paper: https://arxiv.org/abs/2203.16279
+
 
 ## Model Overview
 The pipeline transforms facts in natural language generated with simple single-attribute templates.
@@ -109,9 +110,10 @@ The *filtered* version of the dataset contains examples without omissions or hal
     --dataset_dir data/d2t/e2e/cleaned-data/ \
     --templates templates/templates-e2e.json \
     --output data/e2e_1stage  \
-    --output_refs data/ref/e2e  \
+    --output_refs data/ref/e2e/  \
     --shuffle \
-    --keep_separate_sents
+    --keep_separate_sents \
+    --splits test
 ```
 
 ## Training
@@ -126,7 +128,7 @@ The implementation of the ordering model is based on https://github.com/airKlizz
     --experiment ord \
     --module ord \
     --gpus 1 \
-    --model_name facebook/bart-base \
+    --model_name facebook/bart-large-mnli \
     --accumulate_grad_batches 4 \
     --max_epochs 1 \
     --val_check_interval 0.05
@@ -141,7 +143,7 @@ The aggregation model is trained on aggregating the (ordered) sentences from the
     --experiment agg \
     --module agg \
     --gpus 1 \
-    --model_name roberta-large \
+    --model_name xlm-roberta-large \
     --accumulate_grad_batches 4 \
     --max_epochs 1 \
     --val_check_interval 0.05
@@ -163,7 +165,7 @@ MODULE="pc"
     --in_dir "data/wikifluent_${VERSION}" \
     --experiment "${MODULE}_${VERSION}" \
     --module "$MODULE" \
-    --model_name "facebook/bart-base" \
+    --model_name "facebook/mbart-large-50" \
     --max_epochs 1 \
     --accumulate_grad_batches 4 \
     --gpus 1 \
@@ -208,7 +210,7 @@ The following commands will run the 3-stage pipeline:
     --module pc \
     --in_dir data/${DATASET_DECODE}_3stage \
     --split test \
-    --gpus 1
+    --gpus 1 \
 ```
 
 ### 2-stage
@@ -242,9 +244,65 @@ The following command will run the 1-stage pipeline:
     --in_dir data/${DATASET_DECODE}_1stage \
     --split test \
     --gpus 1
+    --out_file "jumble.out"
 ```
 
 The output is always stored in the experiment directory of the pc model (default output name is `{split}.out`).
+
+
+## Data Generation for RobustnessRobustness 
+
+To run the perturbations use the following command.
+```
+cd robustness
+python3 main.py \
+        --ref_file data/<data.jsonl> \
+        --output_file example \
+
+```
+
+## Multilinguality
+
+E2E preprocess in German Language
+
+```
+DATASET_DECODE="e2e"
+./preprocess.py \
+    --dataset e2e \
+    --dataset_dir data/d2t/e2e/cleaned-data/de \
+    --templates templates/templates-e2e-de.json \
+    --output data/de/e2e_1stage  \
+    --output_refs data/ref/e2e/de  \
+    --shuffle \
+    --keep_separate_sents \
+    --splits test
+```
+
+```
+./order.py \
+    --experiment ord \
+    --in_dir data/de/${DATASET_DECODE}_1stage \
+    --out_dir data/de/${DATASET_DECODE}_2stage \
+    --splits test
+```
+
+```
+./aggregate.py \
+    --experiment agg \
+    --in_dir data/de/${DATASET_DECODE}_2stage \
+    --out_dir data/de/${DATASET_DECODE}_3stage \
+    --splits test
+```
+
+```
+./decode.py \
+    --experiment "pc_${VERSION}" \
+    --module pc \
+    --in_dir data/de/${DATASET_DECODE}_3stage \
+    --split test \
+    --gpus 1 \
+    --out_filename $de.out
+```
 
 ## Evaluation
 ### E2E Metrics
@@ -258,8 +316,8 @@ The following command evaluates the output for the test split from the 3-stage p
 
 ```
 ./evaluate.py \
-    --hyp_file experiments/pc_${VERSION}/test.out \
-    --ref_file data/ref/${DATASET_DECODE}/test.ref \
+    --hyp_file experiments/pc_filtered/e2e.out \
+    --ref_file data/ref/e2e/test.ref \
     --use_e2e_metrics
 ```
 You can also run faster evaluation of BLEU score faster with the [sacreBLEU](https://pypi.org/project/sacrebleu/) package by omitting the flag `--use_e2e_metrics`.
@@ -336,4 +394,14 @@ Then run the script `aggregate.py` with the flag `--eval` for evaluating aggrega
     --in_dir data/webnlg_agg/ \
     --splits test  \
     --eval
+```
+
+
+To run the perturbations use the following command.
+```
+python3 main.py \
+        --task D2T  \
+        --ref_file data/<data.jsonl> \
+        --output_file example \
+        --criteria <all/Fluency/Invariance/Coverage/Relevance>
 ```

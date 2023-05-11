@@ -1,0 +1,28 @@
+{
+    "area": [
+        "<subject> ist im <object> ."
+    ],
+    "customer rating": [
+        "<subject> hat <object> Kundenbewertung ."
+    ],
+    "eatType": [
+        "<subject> ist ein <object> ."
+    ],
+    "familyFriendly": {
+        "Ja" : [
+            "<subject> ist familienfreundlich ."
+        ],
+        "NEIN" : [
+            "<subject> ist nicht familienfreundlich ."
+        ]
+        },
+    "food": [
+        "<subject> serviert <object> Essen ."
+    ],
+    "near": [
+        "<subject> ist in der Nähe von <object> ."
+    ],
+    "priceRange": [
+        "<subject> hat <object> Preisspanne ."
+    ]
+}

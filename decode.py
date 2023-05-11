@@ -74,7 +74,7 @@ if __name__ == "__main__":
     torch.set_num_threads(args.max_threads)
 
     model_path = os.path.join(args.exp_dir, args.experiment, args.checkpoint)
-    out_path = os.path.join(args.exp_dir, args.experiment, f"{args.split}.out")
+    out_path = os.path.join(args.exp_dir, args.experiment,"hi", f"{args.split}.out")
 
     di = PCInferenceModule(args, model_path=model_path)
 
